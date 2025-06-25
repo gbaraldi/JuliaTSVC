@@ -2,7 +2,7 @@ module TempTest
 using Test
 using StatsBase
 using LinearAlgebra
-include("functions.jl")
+include("functions1.jl")
 
 # Helper to check if a function exists
 function function_exists(base_name::String)
@@ -564,6 +564,225 @@ function test_s152()
     a_julia, b_julia = copy(a_orig), copy(b_orig); s152(a_julia, b_julia, c, d, e); @test a_julia ≈ a_c && b_julia ≈ b_c
     a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s152_inbounds(a_julia_inbounds, b_julia_inbounds, c, d, e); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
 end
+
+function test_s161()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+    c = rand(Float64, len)
+    d = rand(Float64, len)
+    e = rand(Float64, len)
+
+    a_orig = copy(a)
+    c_orig = copy(c)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    c_c = copy(c_orig)
+    for i in 1:len-1
+        if b[i] < 0.0
+            c_c[i+1] = a_c[i] + d[i] * d[i]
+        else
+            a_c[i] = c_c[i] + d[i] * e[i]
+        end
+    end
+
+    a_julia, c_julia = copy(a_orig), copy(c_orig); s161(a_julia, b, c_julia, d, e); @test a_julia ≈ a_c && c_julia ≈ c_c
+    a_julia_inbounds, c_julia_inbounds = copy(a_orig), copy(c_orig); s161_inbounds(a_julia_inbounds, b, c_julia_inbounds, d, e); @test a_julia_inbounds ≈ a_c && c_julia_inbounds ≈ c_c
+    a_julia_const, c_julia_const = copy(a_orig), copy(c_orig); s161_const(a_julia_const, b, c_julia_const, d, e); @test a_julia_const ≈ a_c && c_julia_const ≈ c_c
+    a_julia_inbounds_const, c_julia_inbounds_const = copy(a_orig), copy(c_orig); s161_inbounds_const(a_julia_inbounds_const, b, c_julia_inbounds_const, d, e); @test a_julia_inbounds_const ≈ a_c && c_julia_inbounds_const ≈ c_c
+end
+
+function test_s1161()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+    c = rand(Float64, len)
+    d = rand(Float64, len)
+    e = rand(Float64, len)
+
+    a_orig = copy(a)
+    b_orig = copy(b)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    for i in 1:len
+        if c[i] < 0.0
+            b_c[i] = a_c[i] + d[i] * d[i]
+        else
+            a_c[i] = c[i] + d[i] * e[i]
+        end
+    end
+
+    a_julia, b_julia = copy(a_orig), copy(b_orig); s1161(a_julia, b_julia, c, d, e); @test a_julia ≈ a_c && b_julia ≈ b_c
+    a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s1161_inbounds(a_julia_inbounds, b_julia_inbounds, c, d, e); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
+    a_julia_const, b_julia_const = copy(a_orig), copy(b_orig); s1161_const(a_julia_const, b_julia_const, c, d, e); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c
+    a_julia_inbounds_const, b_julia_inbounds_const = copy(a_orig), copy(b_orig); s1161_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, c, d, e); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c
+
+end
+
+
+function test_s162()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+    c = rand(Float64, len)
+    k = rand(0:10)
+    a_orig = copy(a)
+    b_orig = copy(b)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    if k > 0
+        for i in 1:len-k
+            a_c[i] = a_c[i+k] + b[i] * c[i]
+        end
+    end
+
+    a_julia, b_julia = copy(a_orig), copy(b_orig); s162(a_julia, b_julia, c, k); @test a_julia ≈ a_c && b_julia ≈ b_c
+    a_julia_const, b_julia_const = copy(a_orig), copy(b_orig); s162_const(a_julia_const, b_julia_const, c, k); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c
+    a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s162_inbounds(a_julia_inbounds, b_julia_inbounds, c, k); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
+    a_julia_inbounds_const, b_julia_inbounds_const = copy(a_orig), copy(b_orig); s162_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, c, k); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c
+end
+
+function test_s171()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+    inc = rand(1:10)
+
+    a_orig = copy(a)
+    b_orig = copy(b)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    for i in 1:length(b)÷inc
+        a_c[(i-1)*inc+1] += b[i]
+    end
+
+    a_julia, b_julia = copy(a_orig), copy(b_orig); s171(a_julia, b_julia, inc); @test a_julia ≈ a_c && b_julia ≈ b_c
+    a_julia_const, b_julia_const = copy(a_orig), copy(b_orig); s171_const(a_julia_const, b_julia_const, inc); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c
+    a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s171_inbounds(a_julia_inbounds, b_julia_inbounds, inc); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
+    a_julia_inbounds_const, b_julia_inbounds_const = copy(a_orig), copy(b_orig); s171_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, inc); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c
+end
+
+function test_s172()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+    n1 = rand(1:10)
+    n3 = rand(1:10)
+
+    a_orig = copy(a)
+    b_orig = copy(b)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    for i in n1:n3:len
+        a_c[i] += b[i]
+    end
+
+    a_julia, b_julia = copy(a_orig), copy(b_orig); s172(a_julia, b_julia, n1, n3); @test a_julia ≈ a_c && b_julia ≈ b_c
+    a_julia_const, b_julia_const = copy(a_orig), copy(b_orig); s172_const(a_julia_const, b_julia_const, n1, n3); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c
+    a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s172_inbounds(a_julia_inbounds, b_julia_inbounds, n1, n3); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
+    a_julia_inbounds_const, b_julia_inbounds_const = copy(a_orig), copy(b_orig); s172_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, n1, n3); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c
+end
+
+function test_s173()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+
+    a_orig = copy(a)
+    b_orig = copy(b)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    k = div(length(a), 2)
+    for i in 1:div(length(a), 2)
+        a_c[i+k] = a[i] + b[i]
+    end
+
+    a_julia, b_julia = copy(a_orig), copy(b_orig); s173(a_julia, b_julia); @test a_julia ≈ a_c && b_julia ≈ b_c
+    a_julia_const, b_julia_const = copy(a_orig), copy(b_orig); s173_const(a_julia_const, b_julia_const); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c
+    a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s173_inbounds(a_julia_inbounds, b_julia_inbounds); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
+    a_julia_inbounds_const, b_julia_inbounds_const = copy(a_orig), copy(b_orig); s173_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c
+end
+
+function test_s174()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+
+    a_orig = copy(a)
+    b_orig = copy(b)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    M = div(len, 2)
+    for i in 1:M
+        a_c[i+M] = a_c[i] + b[i]
+    end
+
+    a_julia, b_julia = copy(a_orig), copy(b_orig); s174(a_julia, b_julia, M); @test a_julia ≈ a_c && b_julia ≈ b_c
+    a_julia_const, b_julia_const = copy(a_orig), copy(b_orig); s174_const(a_julia_const, b_julia_const, M); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c
+    a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s174_inbounds(a_julia_inbounds, b_julia_inbounds, M); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
+    a_julia_inbounds_const, b_julia_inbounds_const = copy(a_orig), copy(b_orig); s174_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, M); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c
+end
+
+function test_s175()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+
+    a_orig = copy(a)
+    b_orig = copy(b)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    inc = rand(1:10)
+    for i in 1:inc:len-inc
+        a_c[i] = a_c[i+inc] + b[i]
+    end
+
+    a_julia, b_julia = copy(a_orig), copy(b_orig); s175(a_julia, b_julia, inc); @test a_julia ≈ a_c && b_julia ≈ b_c
+    a_julia_const, b_julia_const = copy(a_orig), copy(b_orig); s175_const(a_julia_const, b_julia_const, inc); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c
+    a_julia_inbounds, b_julia_inbounds = copy(a_orig), copy(b_orig); s175_inbounds(a_julia_inbounds, b_julia_inbounds, inc); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c
+    a_julia_inbounds_const, b_julia_inbounds_const = copy(a_orig), copy(b_orig); s175_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, inc); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c
+end
+
+function test_s176()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+    c = rand(Float64, len)
+    m = div(len, 2)
+    a_orig = copy(a)
+    b_orig = copy(b)
+    c_orig = copy(c)
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    c_c = copy(c_orig)
+    for j in 1:m
+        for i in 1:m
+            a_c[i] += b_c[i+m-j] * c_c[j]
+        end
+    end
+
+    a_julia, b_julia, c_julia = copy(a_orig), copy(b_orig), copy(c_orig); s176(a_julia, b_julia, c_julia); @test a_julia ≈ a_c && b_julia ≈ b_c && c_julia ≈ c_c
+    a_julia_const, b_julia_const, c_julia_const = copy(a_orig), copy(b_orig), copy(c_orig); s176_const(a_julia_const, b_julia_const, c_julia_const); @test a_julia_const ≈ a_c && b_julia_const ≈ b_c && c_julia_const ≈ c_c
+    a_julia_inbounds, b_julia_inbounds, c_julia_inbounds = copy(a_orig), copy(b_orig), copy(c_orig); s176_inbounds(a_julia_inbounds, b_julia_inbounds, c_julia_inbounds); @test a_julia_inbounds ≈ a_c && b_julia_inbounds ≈ b_c && c_julia_inbounds ≈ c_c
+    a_julia_inbounds_const, b_julia_inbounds_const, c_julia_inbounds_const = copy(a_orig), copy(b_orig), copy(c_orig); s176_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, c_julia_inbounds_const); @test a_julia_inbounds_const ≈ a_c && b_julia_inbounds_const ≈ b_c && c_julia_inbounds_const ≈ c_c
+end
+
 
 function test_s211()
     len = 100
@@ -1542,6 +1761,15 @@ function main()
     if function_exists("s141") @testset "s141" begin test_s141() end end
     if function_exists("s151") @testset "s151" begin test_s151() end end
     if function_exists("s152") @testset "s152" begin test_s152() end end
+    if function_exists("s161") @testset "s161" begin test_s161() end end
+    if function_exists("s1161") @testset "s1161" begin test_s1161() end end
+    if function_exists("s162") @testset "s162" begin test_s162() end end
+    if function_exists("s171") @testset "s171" begin test_s171() end end
+    if function_exists("s172") @testset "s172" begin test_s172() end end
+    if function_exists("s173") @testset "s173" begin test_s173() end end
+    if function_exists("s174") @testset "s174" begin test_s174() end end
+    if function_exists("s175") @testset "s175" begin test_s175() end end
+    if function_exists("s176") @testset "s176" begin test_s176() end end
     if function_exists("s211") @testset "s211" begin test_s211() end end
     if function_exists("s212") @testset "s212" begin test_s212() end end
     if function_exists("s1213") @testset "s1213" begin test_s1213() end end
@@ -1576,7 +1804,9 @@ function main()
     if function_exists("s272") @testset "s272" begin test_s272() end end
     if function_exists("s273") @testset "s273" begin test_s273() end end
     if function_exists("s274") @testset "s274" begin test_s274() end end
+
 end
 
-main()
+!isinteractive() && main()
+
 end

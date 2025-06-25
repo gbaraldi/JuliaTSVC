@@ -629,7 +629,7 @@ function s121_inbounds_const(a::AbstractVector, b::AbstractArray)
 end
 
 # s122 - variable lower and upper bound, and stride, reverse data access and jump in data access
-function s122(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s122(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     j = 1
@@ -641,7 +641,7 @@ function s122(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
     return nothing
 end
 
-function s122_const(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s122_const(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     j = 1
@@ -653,7 +653,7 @@ function s122_const(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integ
     return nothing
 end
 
-function s122_inbounds(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s122_inbounds(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     j = 1
@@ -665,7 +665,7 @@ function s122_inbounds(a::AbstractVector, b::AbstractVector, n1::Integer, n3::In
     return nothing
 end
 
-function s122_inbounds_const(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s122_inbounds_const(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     j = 1
@@ -1219,7 +1219,7 @@ function s141_inbounds_const(flat_2d_array::AbstractVector, bb::AbstractMatrix)
 end
 
 # s151 - passing parameter information into a subroutine
-function s151s(a::AbstractVector, b::AbstractVector, m::Integer)
+function s151s(a::AbstractVector, b::AbstractVector, m::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a)-m)
     for i in 1:length(a)-m
@@ -1257,7 +1257,7 @@ function s151_inbounds_const(a::AbstractVector, b::AbstractVector)
 end
 
 # s152 - collecting information from a subroutine
-function s152s(a::AbstractVector, b::AbstractVector, c::AbstractVector, i::Integer)
+function s152s(a::AbstractVector, b::AbstractVector, c::AbstractVector, i::Int)
     checkbounds(a, i)
     checkbounds(b, i)
     checkbounds(c, i)
@@ -1344,7 +1344,7 @@ function s161_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::
         if Const(b)[i] < 0.0
             c[i+1] = a[i] + Const(d)[i] * Const(d)[i]
         else
-            a[i] = Const(c)[i] + Const(d)[i] * Const(e)[i]
+            a[i] = c[i] + Const(d)[i] * Const(e)[i]
         end
     end
     return nothing
@@ -1376,7 +1376,7 @@ function s161_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractVe
         if Const(b)[i] < 0.0
             c[i+1] = a[i] + Const(d)[i] * Const(d)[i]
         else
-            a[i] = Const(c)[i] + Const(d)[i] * Const(e)[i]
+            a[i] = c[i] + Const(d)[i] * Const(e)[i]
         end
     end
     return nothing
@@ -1389,7 +1389,7 @@ function s1161(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::Abstr
     checkbounds(c, 1:length(c))
     checkbounds(d, 1:length(d))
     checkbounds(e, 1:length(e))
-    for i in 1:length(a)-1
+    for i in 1:length(a)
         if c[i] < 0.0
             b[i] = a[i] + d[i] * d[i]
         else
@@ -1405,7 +1405,7 @@ function s1161_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, d:
     checkbounds(c, 1:length(c))
     checkbounds(d, 1:length(d))
     checkbounds(e, 1:length(e))
-    @aliasscope for i in 1:length(a)-1
+    @aliasscope for i in 1:length(a)
         if Const(c)[i] < 0.0
             b[i] = a[i] + Const(d)[i] * Const(d)[i]
         else
@@ -1421,7 +1421,7 @@ function s1161_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector,
     checkbounds(c, 1:length(c))
     checkbounds(d, 1:length(d))
     checkbounds(e, 1:length(e))
-    @inbounds for i in 1:length(a)-1
+    @inbounds for i in 1:length(a)
         if c[i] < 0.0
             b[i] = a[i] + d[i] * d[i]
         else
@@ -1437,7 +1437,7 @@ function s1161_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractV
     checkbounds(c, 1:length(c))
     checkbounds(d, 1:length(d))
     checkbounds(e, 1:length(e))
-    @aliasscope @inbounds for i in 1:length(a)-1
+    @aliasscope @inbounds for i in 1:length(a)
         if Const(c)[i] < 0.0
             b[i] = a[i] + Const(d)[i] * Const(d)[i]
         else
@@ -1448,7 +1448,7 @@ function s1161_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractV
 end
 
 # s162 - deriving assertions
-function s162(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Integer)
+function s162(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a)-k)
     checkbounds(c, 1:length(a)-k)
@@ -1460,7 +1460,7 @@ function s162(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Intege
     return nothing
 end
 
-function s162_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Integer)
+function s162_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a)-k)
     checkbounds(c, 1:length(a)-k)
@@ -1472,7 +1472,7 @@ function s162_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::
     return nothing
 end
 
-function s162_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Integer)
+function s162_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a)-k)
     checkbounds(c, 1:length(a)-k)
@@ -1484,7 +1484,7 @@ function s162_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, 
     return nothing
 end
 
-function s162_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Integer)
+function s162_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, k::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a)-k)
     checkbounds(c, 1:length(a)-k)
@@ -1497,44 +1497,44 @@ function s162_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractVe
 end
 
 # s171 - symbolic dependence tests
-function s171(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s171(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(b, 1:length(b))
-    checkbounds(a, (length(b)-1)*inc+1)
-    for i in 1:length(b)
+    checkbounds(a, (length(b)-1)÷inc+1)
+    for i in 1:length(b)÷inc
         a[(i-1)*inc+1] += b[i]
     end
     return nothing
 end
 
-function s171_const(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s171_const(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(b, 1:length(b))
-    checkbounds(a, (length(b)-1)*inc+1)
-    @aliasscope for i in 1:length(b)
+    checkbounds(a, (length(b)-1)÷inc+1)
+    @aliasscope for i in 1:length(b)÷inc
         a[(i-1)*inc+1] += Const(b)[i]
     end
     return nothing
 end
 
-function s171_inbounds(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s171_inbounds(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(b, 1:length(b))
-    checkbounds(a, (length(b)-1)*inc+1)
-    @inbounds for i in 1:length(b)
+    checkbounds(a, (length(b)-1)÷inc+1)
+    @inbounds for i in 1:length(b)÷inc
         a[(i-1)*inc+1] += b[i]
     end
     return nothing
 end
 
-function s171_inbounds_const(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s171_inbounds_const(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(b, 1:length(b))
-    checkbounds(a, (length(b)-1)*inc+1)
-    @aliasscope @inbounds for i in 1:length(b)
+    checkbounds(a, (length(b)-1)÷inc+1)
+    @aliasscope @inbounds for i in 1:length(b)÷inc
         a[(i-1)*inc+1] += Const(b)[i]
     end
     return nothing
 end
 
 # s172 - symbolic dependence tests, vectorizable if n3 != 0
-function s172(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s172(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     for i in n1:n3:length(a)
@@ -1543,7 +1543,7 @@ function s172(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
     return nothing
 end
 
-function s172_const(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s172_const(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     @aliasscope for i in n1:n3:length(a)
@@ -1552,7 +1552,7 @@ function s172_const(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integ
     return nothing
 end
 
-function s172_inbounds(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s172_inbounds(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     @inbounds for i in n1:n3:length(a)
@@ -1561,7 +1561,7 @@ function s172_inbounds(a::AbstractVector, b::AbstractVector, n1::Integer, n3::In
     return nothing
 end
 
-function s172_inbounds_const(a::AbstractVector, b::AbstractVector, n1::Integer, n3::Integer)
+function s172_inbounds_const(a::AbstractVector, b::AbstractVector, n1::Int, n3::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     @aliasscope @inbounds for i in n1:n3:length(a)
@@ -1612,7 +1612,7 @@ function s173_inbounds_const(a::AbstractVector, b::AbstractVector)
 end
 
 # s174 - loop with subscript that may seem ambiguous
-function s174(a::AbstractVector, b::AbstractVector, M::Integer)
+function s174(a::AbstractVector, b::AbstractVector, M::Int)
     checkbounds(a, 1:2*M)
     checkbounds(b, 1:M)
     for i in 1:M
@@ -1621,7 +1621,7 @@ function s174(a::AbstractVector, b::AbstractVector, M::Integer)
     return nothing
 end
 
-function s174_const(a::AbstractVector, b::AbstractVector, M::Integer)
+function s174_const(a::AbstractVector, b::AbstractVector, M::Int)
     checkbounds(a, 1:2*M)
     checkbounds(b, 1:M)
     @aliasscope for i in 1:M
@@ -1630,7 +1630,7 @@ function s174_const(a::AbstractVector, b::AbstractVector, M::Integer)
     return nothing
 end
 
-function s174_inbounds(a::AbstractVector, b::AbstractVector, M::Integer)
+function s174_inbounds(a::AbstractVector, b::AbstractVector, M::Int)
     checkbounds(a, 1:2*M)
     checkbounds(b, 1:M)
     @inbounds for i in 1:M
@@ -1639,7 +1639,7 @@ function s174_inbounds(a::AbstractVector, b::AbstractVector, M::Integer)
     return nothing
 end
 
-function s174_inbounds_const(a::AbstractVector, b::AbstractVector, M::Integer)
+function s174_inbounds_const(a::AbstractVector, b::AbstractVector, M::Int)
     checkbounds(a, 1:2*M)
     checkbounds(b, 1:M)
     @aliasscope @inbounds for i in 1:M
@@ -1649,7 +1649,7 @@ function s174_inbounds_const(a::AbstractVector, b::AbstractVector, M::Integer)
 end
 
 # s175 - symbolic dependence tests
-function s175(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s175(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     for i in 1:inc:length(a)-inc
@@ -1658,7 +1658,7 @@ function s175(a::AbstractVector, b::AbstractVector, inc::Integer)
     return nothing
 end
 
-function s175_const(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s175_const(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     @aliasscope for i in 1:inc:length(a)-inc
@@ -1667,7 +1667,7 @@ function s175_const(a::AbstractVector, b::AbstractVector, inc::Integer)
     return nothing
 end
 
-function s175_inbounds(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s175_inbounds(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     @inbounds for i in 1:inc:length(a)-inc
@@ -1676,7 +1676,7 @@ function s175_inbounds(a::AbstractVector, b::AbstractVector, inc::Integer)
     return nothing
 end
 
-function s175_inbounds_const(a::AbstractVector, b::AbstractVector, inc::Integer)
+function s175_inbounds_const(a::AbstractVector, b::AbstractVector, inc::Int)
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     @aliasscope @inbounds for i in 1:inc:length(a)-inc

@@ -745,7 +745,7 @@ function s1281(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::Abstr
     checkbounds(e, 1:length(a))
     for i in 1:length(a)
         x = b[i] * c[i] + a[i] * d[i] + e[i]
-        a[i] = x - 1.0
+        a[i] = x - one(eltype(a))
         b[i] = x
     end
     return nothing
@@ -759,7 +759,7 @@ function s1281_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, d:
     checkbounds(e, 1:length(a))
     @aliasscope for i in 1:length(a)
         x = b[i] * Const(c)[i] + a[i] * Const(d)[i] + Const(e)[i]
-        a[i] = x - 1.0
+        a[i] = x - one(eltype(a))
         b[i] = x
     end
     return nothing
@@ -773,7 +773,7 @@ function s1281_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector,
     checkbounds(e, 1:length(a))
     @inbounds for i in 1:length(a)
         x = b[i] * c[i] + a[i] * d[i] + e[i]
-        a[i] = x - 1.0
+        a[i] = x - one(eltype(a))
         b[i] = x
     end
     return nothing
@@ -787,7 +787,7 @@ function s1281_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractV
     checkbounds(e, 1:length(a))
     @aliasscope @inbounds for i in 1:length(a)
         x = b[i] * Const(c)[i] + a[i] * Const(d)[i] + Const(e)[i]
-        a[i] = x - 1.0
+        a[i] = x - one(eltype(a))
         b[i] = x
     end
     return nothing
@@ -1314,7 +1314,7 @@ function s316_inbounds_const(a::AbstractVector)
 end
 
 # s318 - reductions, isamax
-function s318(a::AbstractVector, inc::Integer)
+function s318(a::AbstractVector, inc::Int)
     checkbounds(a, 1:inc:length(a))
     max_val = abs(a[1])
     max_idx = 1
@@ -1327,7 +1327,7 @@ function s318(a::AbstractVector, inc::Integer)
     return max_idx
 end
 
-function s318_const(a::AbstractVector, inc::Integer)
+function s318_const(a::AbstractVector, inc::Int)
     checkbounds(a, 1:inc:length(a))
     max_val = abs(Const(a)[1])
     max_idx = 1
@@ -1340,7 +1340,7 @@ function s318_const(a::AbstractVector, inc::Integer)
     return max_idx
 end
 
-function s318_inbounds(a::AbstractVector, inc::Integer)
+function s318_inbounds(a::AbstractVector, inc::Int)
     checkbounds(a, 1:inc:length(a))
     max_val = abs(a[1])
     max_idx = 1
@@ -1353,7 +1353,7 @@ function s318_inbounds(a::AbstractVector, inc::Integer)
     return max_idx
 end
 
-function s318_inbounds_const(a::AbstractVector, inc::Integer)
+function s318_inbounds_const(a::AbstractVector, inc::Int)
     checkbounds(a, 1:inc:length(a))
     max_val = abs(Const(a)[1])
     max_idx = 1
@@ -2139,7 +2139,7 @@ function s352_inbounds_const(a::AbstractVector, b::AbstractVector)
 end
 
 # s353 - loop rerolling, unrolled sparse saxpy with gather
-function s353(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Integer})
+function s353(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(b))
     checkbounds(c, 1)
@@ -2151,7 +2151,7 @@ function s353(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::Abstr
     return nothing
 end
 
-function s353_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Integer})
+function s353_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(b))
     checkbounds(c, 1)
@@ -2163,7 +2163,7 @@ function s353_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip:
     return nothing
 end
 
-function s353_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Integer})
+function s353_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(b))
     checkbounds(c, 1)
@@ -2175,7 +2175,7 @@ function s353_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, 
     return nothing
 end
 
-function s353_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Integer})
+function s353_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractVector, ip::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(b))
     checkbounds(c, 1)
@@ -2459,7 +2459,7 @@ function s441_inbounds_const(a::AbstractVector, b::AbstractVector, c::AbstractVe
 end
 
 # s442 - computed goto
-function s442(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Integer})
+function s442(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     checkbounds(c, 1:length(a))
@@ -2481,7 +2481,7 @@ function s442(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::Abstra
     return nothing
 end
 
-function s442_simd(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Integer})
+function s442_simd(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     checkbounds(c, 1:length(a))
@@ -2503,7 +2503,7 @@ function s442_simd(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::A
     return nothing
 end
 
-function s442_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Integer})
+function s442_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     checkbounds(c, 1:length(a))
@@ -2525,7 +2525,7 @@ function s442_inbounds(a::AbstractVector, b::AbstractVector, c::AbstractVector, 
     return nothing
 end
 
-function s442_inbounds_simd(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Integer})
+function s442_inbounds_simd(a::AbstractVector, b::AbstractVector, c::AbstractVector, d::AbstractVector, e::AbstractVector, indx::AbstractVector{<:Int})
     checkbounds(a, 1:length(a))
     checkbounds(b, 1:length(a))
     checkbounds(c, 1:length(a))

@@ -2,7 +2,7 @@ module TempTest
 using Test
 using StatsBase
 using LinearAlgebra
-include("functions.jl")
+include("functions2.jl")
 
 function test_s275()
     dims = 10
@@ -1645,6 +1645,96 @@ function test_s442()
     @test d_julia_inbounds_simd ≈ d_c
 end
 
+function test_s443()
+    len = 100
+    a = rand(Float64, len)
+    b = rand(Float64, len)
+    c = rand(Float64, len)
+    d = rand(Float64, len)
+    e = rand(Float64, len)
+
+    a_orig = copy(a)
+    b_orig = copy(b)
+    c_orig = copy(c)
+    d_orig = copy(d)
+    e_orig = copy(e)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    b_c = copy(b_orig)
+    c_c = copy(c_orig)
+    d_c = copy(d_orig)
+    e_c = copy(e_orig)
+    for i in 1:len 
+        if d[i] < 0.0
+            a_c[i] = b_c[i] + c_c[i] * e_c[i]
+        else
+            a_c[i] = b_c[i] + b_c[i] * c_c[i]
+        end
+        c_c[i] = a_c[i] + d_c[i]
+    end
+
+    a_julia, b_julia, c_julia, d_julia, e_julia = copy(a_orig), copy(b_orig), copy(c_orig), copy(d_orig), copy(e_orig)
+    s443(a_julia, b_julia, c_julia, d_julia, e_julia)
+    @test a_julia ≈ a_c
+    @test b_julia ≈ b_c
+    @test c_julia ≈ c_c
+    @test d_julia ≈ d_c
+
+    a_julia_const, b_julia_const, c_julia_const, d_julia_const, e_julia_const = copy(a_orig), copy(b_orig), copy(c_orig), copy(d_orig), copy(e_orig)
+    s443_const(a_julia_const, b_julia_const, c_julia_const, d_julia_const, e_julia_const)
+    @test a_julia_const ≈ a_c
+    @test b_julia_const ≈ b_c
+    @test c_julia_const ≈ c_c
+    @test d_julia_const ≈ d_c
+
+    a_julia_inbounds, b_julia_inbounds, c_julia_inbounds, d_julia_inbounds, e_julia_inbounds = copy(a_orig), copy(b_orig), copy(c_orig), copy(d_orig), copy(e_orig)
+    s443_inbounds(a_julia_inbounds, b_julia_inbounds, c_julia_inbounds, d_julia_inbounds, e_julia_inbounds)
+    @test a_julia_inbounds ≈ a_c
+    @test b_julia_inbounds ≈ b_c
+    @test c_julia_inbounds ≈ c_c
+    @test d_julia_inbounds ≈ d_c
+
+    a_julia_inbounds_const, b_julia_inbounds_const, c_julia_inbounds_const, d_julia_inbounds_const, e_julia_inbounds_const = copy(a_orig), copy(b_orig), copy(c_orig), copy(d_orig), copy(e_orig)
+    s443_inbounds_const(a_julia_inbounds_const, b_julia_inbounds_const, c_julia_inbounds_const, d_julia_inbounds_const, e_julia_inbounds_const)
+    @test a_julia_inbounds_const ≈ a_c
+    @test b_julia_inbounds_const ≈ b_c
+    @test c_julia_inbounds_const ≈ c_c
+    @test d_julia_inbounds_const ≈ d_c
+end
+
+function test_s451()
+    len = 100
+    a = zeros(Float64, len)
+    b = rand(Float64, len)
+    c = rand(Float64, len)
+    d = rand(Float64, len)
+
+    a_orig = copy(a)
+
+    # C implementation logic
+    a_c = copy(a_orig)
+    for i in 1:len
+        a_c[i] = b[i] + c[i] * d[i]
+    end
+
+    a_julia = copy(a_orig)
+    s451(a_julia, b, c, d)
+    @test a_julia ≈ a_c
+
+    a_julia_const = copy(a_orig)
+    s451_const(a_julia_const, b, c, d)
+    @test a_julia_const ≈ a_c
+
+    a_julia_inbounds = copy(a_orig)
+    s451_inbounds(a_julia_inbounds, b, c, d)
+    @test a_julia_inbounds ≈ a_c
+
+    a_julia_inbounds_const = copy(a_orig)
+    s451_inbounds_const(a_julia_inbounds_const, b, c, d)
+    @test a_julia_inbounds_const ≈ a_c
+end
+
 function test_s452()
     len = 100
     a = zeros(Float64, len)
@@ -1981,6 +2071,13 @@ function main()
     @testset "s442" begin
         test_s442()
     end
+    @testset "s443" begin
+        test_s443()
+    end
+    
+    @testset "s451" begin
+        test_s451()
+    end
     @testset "s452" begin
         test_s452()
     end
@@ -1998,5 +2095,5 @@ function main()
     end
 end
 
-main()
+!isinteractive() && main()
 end
